@@ -2,6 +2,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#define NUMBER_OF_CONTACTS 3
+#define LENGTH_OF_LINE 100
+#define NUMBER_OF_LINES 2
 
 int convert_symbol_to_number(int symbol)
 {
@@ -36,9 +39,10 @@ int convert_symbol_to_number(int symbol)
     return symbol_values[toupper(symbol)];
 }
 
-void convert_string_to_number(char string[], char number[]){ //arrays must be the same length
+void convert_string_to_number(char string[], char number[])
+{ // arrays must be the same length
     int length = strlen(string);
-    for(int i = 0; i < length; i++){
+    for (int i = 0; i < length; i++) {
         number[i] = convert_symbol_to_number(string[i]);
     }
     number[length] = '\0';
@@ -48,7 +52,7 @@ bool matches_number(char input[], char number[])
 {
     int input_size = strlen(input);
     int number_size = strlen(number);
-    if (input_size > number_size) { //number cannot match input larger that itself
+    if (input_size > number_size) { // number cannot match input larger that itself
         return false;
     }
 
@@ -60,13 +64,37 @@ bool matches_number(char input[], char number[])
     return true;
 }
 
+void print_contacts(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) // temp
+{
+    for (int i = 0; i < NUMBER_OF_CONTACTS; i++) {
+        for (int j = 0; j < NUMBER_OF_LINES; j++) {
+            printf("%s\n", contacts[i][j]);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
-    if(argc < 2){
-        return 1; // TODO: vypíš všechny kontakty
+    char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+    char file_input[101];
+    int contact = 0;
+    int line = 0;
+    while (fgets(file_input, sizeof(file_input), stdin) != NULL) {
+        strcpy(contacts[contact][line], file_input);
+        if (line == 0) {
+            line++;
+        } else {
+            line = 0;
+            contact++;
+        }
     }
-    char input[101];
-    
+    print_contacts(contacts);
+
+    if (argc < 2) {
+        return 0; // TODO: vypíš všechny kontakty
+    }
+    char *input = argv[1];
+    // printf("Number: %s", contacts[0][0]);
     // char a[2] = {'1', '2'};
     // char b[2] = {'1', '2'};
     // char c[3] = {'+', '1', '2'};
@@ -74,11 +102,11 @@ int main(int argc, char *argv[])
     // bool nn = matches_number(a, c);
     // printf("%d\n%d", n, nn);
     // printf("%d", convert_symbol_to_number('L'));
-    char s[] = "aaaddd";
-    char number[strlen(s)+1];
-    char n[] = "222333";
-    convert_string_to_number(s, number);
-    bool result = matches_number(number, n);
-    printf("result:%d\ninput: %s\n number %s", result, number, n);
+    // char s[] = "aaaddd";
+    // char number[strlen(s)+1];
+    // char n[] = "222333";
+    // convert_string_to_number(s, number);
+    // bool result = matches_number(number, n);
+    // printf("result:%d\ninput: %s\n number %s", result, number, n);
     return 0;
 }
