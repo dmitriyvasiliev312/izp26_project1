@@ -64,18 +64,7 @@ bool matches_number(char input[], char number[])
     return true;
 }
 
-void print_contacts(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) // temp
-{
-    for (int i = 0; i < NUMBER_OF_CONTACTS; i++) {
-        for (int j = 0; j < NUMBER_OF_LINES; j++) {
-            printf("%s\n", contacts[i][j]);
-        }
-    }
-}
-
-int main(int argc, char *argv[])
-{
-    char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+void read_contacts_from_file(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]){
     char file_input[101];
     int contact = 0;
     int line = 0;
@@ -88,25 +77,26 @@ int main(int argc, char *argv[])
             contact++;
         }
     }
+}
+
+void print_contacts(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) // temp
+{
+    for (int i = 0; i < NUMBER_OF_CONTACTS; i++) {
+        for (int j = 0; j < NUMBER_OF_LINES; j++) {
+            printf("%s\n", contacts[i][j]);
+        }
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+    read_contacts_from_file(contacts);
     print_contacts(contacts);
 
     if (argc < 2) {
         return 0; // TODO: vypíš všechny kontakty
     }
     char *input = argv[1];
-    // printf("Number: %s", contacts[0][0]);
-    // char a[2] = {'1', '2'};
-    // char b[2] = {'1', '2'};
-    // char c[3] = {'+', '1', '2'};
-    // bool n = matches_number(a, b);
-    // bool nn = matches_number(a, c);
-    // printf("%d\n%d", n, nn);
-    // printf("%d", convert_symbol_to_number('L'));
-    // char s[] = "aaaddd";
-    // char number[strlen(s)+1];
-    // char n[] = "222333";
-    // convert_string_to_number(s, number);
-    // bool result = matches_number(number, n);
-    // printf("result:%d\ninput: %s\n number %s", result, number, n);
     return 0;
 }
