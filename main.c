@@ -64,8 +64,23 @@ bool matches_number(char input[], char number[])
     return true;
 }
 
-void read_contacts_from_file(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]){
-    char file_input[101];
+int find_matching_contacts_by_line(char all_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
+                            char matched_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE], char number[], int line)
+{
+    int number_of_matched_contacts = 0;
+    for(int contact = 0; contact < NUMBER_OF_CONTACTS; contact++){
+        if(matches_number(all_contacts[contact][line], number)){
+            strcpy(matched_contacts[number_of_matched_contacts][0], all_contacts[contact][0]);
+            strcpy(matched_contacts[number_of_matched_contacts][1], all_contacts[contact][1]);
+            number_of_matched_contacts++;
+        }
+    }
+    return number_of_matched_contacts;
+}
+
+void read_contacts_to_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE])
+{
+    char file_input[LENGTH_OF_LINE + 1];
     int contact = 0;
     int line = 0;
     while (fgets(file_input, sizeof(file_input), stdin) != NULL) {
@@ -79,7 +94,7 @@ void read_contacts_from_file(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][
     }
 }
 
-void print_contacts(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) // temp
+void print_contact_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) // temp
 {
     for (int i = 0; i < NUMBER_OF_CONTACTS; i++) {
         for (int j = 0; j < NUMBER_OF_LINES; j++) {
@@ -91,12 +106,17 @@ void print_contacts(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF
 int main(int argc, char *argv[])
 {
     char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
-    read_contacts_from_file(contacts);
-    print_contacts(contacts);
+    read_contacts_to_array(contacts);
+    // print_contact_array(contacts);
 
     if (argc < 2) {
         return 0; // TODO: vypíš všechny kontakty
     }
     char *input = argv[1];
+
+    char matched_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+    int number_of_matched_contacts = find_matching_contacts_by_line(contacts, matched_contacts, input, 1);
+    print_contact_array(matched_contacts);
+
     return 0;
 }
