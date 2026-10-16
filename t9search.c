@@ -8,7 +8,7 @@
 #define PHONE_NUMBER 1
 #define NAME 0
 
-char *strcpy_until_newline(char destination[], char source[])
+char *strcpy_until_newline(char destination[], char source[]) // same functionality as strcpy, but it stops at \n symbols
 {
     int i = 0;
     while (source[i] != '\0' && source[i] != '\n') {
@@ -19,7 +19,7 @@ char *strcpy_until_newline(char destination[], char source[])
     return destination;
 }
 
-bool string_contains_only_digits(char string[])
+bool string_only_contains_digits(char string[])
 {
     for (size_t i = 0; i < strlen(string); i++) {
         if (string[i] < '0' || string[i] > '9') {
@@ -31,7 +31,11 @@ bool string_contains_only_digits(char string[])
 
 int convert_symbol_to_number(int symbol)
 {
-    char symbol_values[256] = {0}; // array of numbers that represent letters and "+"
+    if (symbol >= '0' && symbol <= '9') { // digits do not change their value
+        return symbol;
+    }
+
+    char symbol_values[256] = {0}; // array of assigned numbers for letters and "+"
     symbol_values['A'] = '2';
     symbol_values['B'] = '2';
     symbol_values['C'] = '2';
@@ -78,12 +82,19 @@ bool matches_number(char input[], char number[])
         return false;
     }
 
-    for (int i = 0; i < input_size; i++) {
-        if (input[i] != number[i]) {
-            return false;
+    for (int position = 0; position <= number_size - input_size; position++) {
+        int character = 0;
+
+        while (character < input_size && input[character] == number[position + character]) {
+            character++;
+        }
+
+        if (character == input_size) {
+            return true;
         }
     }
-    return true;
+
+    return false;
 }
 
 int find_matching_contacts_by_line(char all_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
@@ -97,7 +108,11 @@ int find_matching_contacts_by_line(char all_contacts[MAX_NUMBER_OF_CONTACTS][NUM
         strcpy(converted_name, all_contacts[contact][NAME]);
         convert_string_to_number(converted_name);
 
-        if (matches_number(number, all_contacts[contact][PHONE_NUMBER]) || matches_number(number, converted_name)) {
+        char converted_number[LENGTH_OF_LINE];
+        strcpy(converted_number, all_contacts[contact][PHONE_NUMBER]);
+        convert_string_to_number(converted_number);
+
+        if (matches_number(number, converted_number) || matches_number(number, converted_name)) {
             strcpy(matched_contacts[number_of_matched_contacts][NAME], all_contacts[contact][NAME]);
             strcpy(matched_contacts[number_of_matched_contacts][PHONE_NUMBER], all_contacts[contact][PHONE_NUMBER]);
             ++number_of_matched_contacts;
@@ -156,7 +171,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     char *entered_number = argv[1]; // read entered number
-    if (!string_contains_only_digits(entered_number)) {
+    if (!string_only_contains_digits(entered_number)) {
         fprintf(stderr, "Error - invalid input.\n");
         return 1;
     }
