@@ -10,25 +10,26 @@
 
 char *strcpy_until_newline(char destination[], char source[]) // same functionality as strcpy, but it stops at \n symbols
 {
-    int i = 0;
-    while (source[i] != '\0' && source[i] != '\n') {
-        destination[i] = source[i];
-        i++;
+    int character = 0;
+    while (source[character] != '\0' && source[character] != '\n') {
+        destination[character] = source[character];
+        character++;
     }
-    destination[i] = '\0';
+    destination[character] = '\0'; // set last character in string to null term.
     return destination;
 }
 
 bool string_only_contains_digits(char string[])
 {
-    for (size_t i = 0; i < strlen(string); i++) {
-        if (string[i] < '0' || string[i] > '9') {
+    for (size_t character = 0; character < strlen(string); character++) {
+        if (string[character] < '0' || string[character] > '9') {
             return false;
         }
     }
     return true;
 }
 
+/*Replaces letters and "+" with assigned numbers. Digits remain unchanged.*/
 int convert_symbol_to_number(int symbol)
 {
     if (symbol >= '0' && symbol <= '9') { // digits do not change their value
@@ -66,14 +67,16 @@ int convert_symbol_to_number(int symbol)
     return symbol_values[toupper(symbol)];
 }
 
+/*Convert letters of the string to assigned numbers.*/
 void convert_string_to_number(char string[])
-{ // convert letters of the string to assigned numbers
+{ 
     int length = strlen(string);
     for (int i = 0; i < length; i++) {
         string[i] = convert_symbol_to_number(string[i]);
     }
 }
 
+/*Check if string (of digits) contains input string.*/
 bool matches_number(char input[], char number[])
 {
     int input_size = strlen(input);
@@ -97,6 +100,7 @@ bool matches_number(char input[], char number[])
     return false;
 }
 
+/*Find all contacts that match the number and add them to empty matched_contacts array.*/
 int find_matching_contacts_by_line(char all_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
                                    char matched_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
                                    char number[])
@@ -121,6 +125,7 @@ int find_matching_contacts_by_line(char all_contacts[MAX_NUMBER_OF_CONTACTS][NUM
     return number_of_matched_contacts;
 }
 
+/*Read contacts from file to empty array.*/
 int read_contacts_to_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE])
 {
     char file_input[LENGTH_OF_LINE];
@@ -128,8 +133,9 @@ int read_contacts_to_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES
     int line = 0;
     while (fgets(file_input, sizeof(file_input), stdin) != NULL) {
 
-        size_t length = strlen(file_input); // TODO:return to this
-        if (length > 0 && file_input[length - 1] != '\n' && !feof(stdin)) {
+        size_t length = strlen(file_input);
+        if (length > 0 && file_input[length - 1] != '\n' &&
+            !feof(stdin)) { // feof checks whether the end of the input stream has been reached
             return -1;
         }
 
