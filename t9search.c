@@ -125,6 +125,11 @@ int read_contacts_to_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES
             contact++;
         }
     }
+
+    if (line != 0) { // function has read a name but has not read the corresponding phone number
+        return -1;
+    }
+
     return contact;
 }
 
@@ -141,7 +146,7 @@ int main(int argc, char *argv[])
     int number_of_contacts = read_contacts_to_array(contacts);
 
     if(number_of_contacts == -1){
-        fprintf(stderr, "Error - line too long.\n");
+        fprintf(stderr, "Error - invalid contact list.\n");
         return 1;
     }
 
