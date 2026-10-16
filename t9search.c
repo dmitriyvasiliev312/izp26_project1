@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #define MAX_NUMBER_OF_CONTACTS 42
-#define LENGTH_OF_LINE 100
+#define LENGTH_OF_LINE 102
 #define NUMBER_OF_LINES 2
 #define PHONE_NUMBER 1
 #define NAME 0
@@ -19,9 +19,10 @@ char *strcpy_until_newline(char destination[], char source[])
     return destination;
 }
 
-bool string_contains_only_digits(char string[]) { 
-    for (size_t i = 0; i < strlen(string);i++){
-        if( string[i] < '0' || string[i] > '9'){
+bool string_contains_only_digits(char string[])
+{
+    for (size_t i = 0; i < strlen(string); i++) {
+        if (string[i] < '0' || string[i] > '9') {
             return false;
         }
     }
@@ -112,7 +113,7 @@ int read_contacts_to_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES
     int line = 0;
     while (fgets(file_input, sizeof(file_input), stdin) != NULL) {
 
-        size_t length = strlen(file_input); //TODO:return to this
+        size_t length = strlen(file_input); // TODO:return to this
         if (length > 0 && file_input[length - 1] != '\n' && !feof(stdin)) {
             return -1;
         }
@@ -145,7 +146,7 @@ int main(int argc, char *argv[])
     char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
     int number_of_contacts = read_contacts_to_array(contacts);
 
-    if(number_of_contacts == -1){
+    if (number_of_contacts == -1) {
         fprintf(stderr, "Error - invalid contact list.\n");
         return 1;
     }
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     char *entered_number = argv[1]; // read entered number
-    if(!string_contains_only_digits(entered_number)){
+    if (!string_contains_only_digits(entered_number)) {
         fprintf(stderr, "Error - invalid input.\n");
         return 1;
     }
