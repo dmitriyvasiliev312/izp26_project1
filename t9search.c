@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#define NUMBER_OF_CONTACTS 42
+#define MAX_NUMBER_OF_CONTACTS 42
 #define LENGTH_OF_LINE 100
 #define NUMBER_OF_LINES 2
 #define PHONE_NUMBER 1
@@ -17,6 +17,15 @@ char *strcpy_until_newline(char destination[], char source[])
     }
     destination[i] = '\0';
     return destination;
+}
+
+bool string_contains_only_digits(char string[]) { 
+    for (size_t i = 0; i < strlen(string);i++){
+        if( string[i] < '0' || string[i] > '9'){
+            return false;
+        }
+    }
+    return true;
 }
 
 int convert_symbol_to_number(int symbol)
@@ -53,7 +62,7 @@ int convert_symbol_to_number(int symbol)
 }
 
 void convert_string_to_number(char string[])
-{ //convert letters of the string to assigned numbers
+{ // convert letters of the string to assigned numbers
     int length = strlen(string);
     for (int i = 0; i < length; i++) {
         string[i] = convert_symbol_to_number(string[i]);
@@ -76,12 +85,12 @@ bool matches_number(char input[], char number[])
     return true;
 }
 
-int find_matching_contacts_by_line(char all_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
-                                   char matched_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
+int find_matching_contacts_by_line(char all_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
+                                   char matched_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE],
                                    char number[])
 {
     int number_of_matched_contacts = 0;
-    for (int contact = 0; contact < NUMBER_OF_CONTACTS; contact++) {
+    for (int contact = 0; contact < MAX_NUMBER_OF_CONTACTS; contact++) {
 
         char converted_name[LENGTH_OF_LINE];
         strcpy(converted_name, all_contacts[contact][NAME]);
@@ -96,12 +105,18 @@ int find_matching_contacts_by_line(char all_contacts[NUMBER_OF_CONTACTS][NUMBER_
     return number_of_matched_contacts;
 }
 
-void read_contacts_to_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE])
+int read_contacts_to_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE])
 {
     char file_input[LENGTH_OF_LINE];
     int contact = 0;
     int line = 0;
     while (fgets(file_input, sizeof(file_input), stdin) != NULL) {
+
+        size_t length = strlen(file_input); //TODO:return to this
+        if (length > 0 && file_input[length - 1] != '\n' && !feof(stdin)) {
+            return -1;
+        }
+
         strcpy_until_newline(contacts[contact][line], file_input);
         if (line == 0) {
             line++;
@@ -110,15 +125,10 @@ void read_contacts_to_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][L
             contact++;
         }
     }
+    return contact;
 }
 
-// void convert_names_to_numbers(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE]) {
-//     for(int contact = 0; contact < NUMBER_OF_CONTACTS; contact++){
-//         convert_string_to_number(contacts[contact][NAME]);
-//     }
-// }
-
-void print_contact_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE], int length)
+void print_contact_array(char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE], int length)
 {
     for (int contact = 0; contact < length; contact++) {
         printf("%s, %s\n", contacts[contact][NAME], contacts[contact][PHONE_NUMBER]);
@@ -127,16 +137,25 @@ void print_contact_array(char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENG
 
 int main(int argc, char *argv[])
 {
-    char contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
-    read_contacts_to_array(contacts);
+    char contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+    int number_of_contacts = read_contacts_to_array(contacts);
 
-    if (argc < 2) { // if program runs with no input
-        print_contact_array(contacts, NUMBER_OF_CONTACTS); // print every contact
+    if(number_of_contacts == -1){
+        fprintf(stderr, "Error - line too long.\n");
+        return 1;
+    }
+
+    if (argc < 2) {                                        // if program runs with no input
+        print_contact_array(contacts, number_of_contacts); // print every contact
         return 0;
     }
     char *entered_number = argv[1]; // read entered number
+    if(!string_contains_only_digits(entered_number)){
+        fprintf(stderr, "Error - invalid input.\n");
+        return 1;
+    }
 
-    char matched_contacts[NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
+    char matched_contacts[MAX_NUMBER_OF_CONTACTS][NUMBER_OF_LINES][LENGTH_OF_LINE];
     int number_of_matched_contacts = find_matching_contacts_by_line(contacts, matched_contacts, entered_number);
     print_contact_array(matched_contacts, number_of_matched_contacts);
 
